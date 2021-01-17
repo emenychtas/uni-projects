@@ -1,0 +1,73 @@
+INSERT INTO guardian(first_name, last_name, street, number, city, postal_code) VALUES
+('Rosalie', 'Kelley', 'Ermou', 9, 'Patras', 26331),
+('Eva', 'Woods', 'Korinthou', 31, 'Patras', 26500),
+('Ernestine', 'Chambers', 'Kanakari', 22, 'Patras', 26332);
+
+INSERT INTO class(capacity, equipment, children_number) VALUES
+(30, 'Equipment 1', 1),
+(40, 'Equipment 2', 1),
+(50, 'Equipment 3', 1);
+
+INSERT INTO child(first_name, last_name, gender, birthdate, age, allergies, guardian_code, class_code) VALUES
+('Ricky', 'Greene', 'Male', '2009-12-21', 4, NULL, 1, 1),
+('Natalie', 'McCormick', 'Female', '2009-07-13', 5, 'Allergy 1', 2, 2),
+('Alan', 'Swanson', 'Male', '2009-08-29', 5, 'Allergy 2', 3, 3);
+
+INSERT INTO telephone_numbers VALUES
+(1, 2610213421),
+(2, 2610421921),
+(2, 6932161202),
+(3, 2610215985);
+
+INSERT INTO activity(description) VALUES
+('Activity 1 Description'),
+('Activity 2 Description'),
+('Activity 3 Description');
+
+INSERT INTO participation VALUES
+(1, 2, 8, '2014-09-10'),
+(2, 3, 9, '2014-10-03'),
+(3, 1, 7, '2014-11-12');
+
+INSERT INTO daily_report VALUES
+('2014-11-01', 'Food 1', 'Accident 1', NULL, 1),
+('2014-11-02', 'Food 2', NULL, 'Notes', 2),
+('2014-11-03', 'Food 3', NULL, NULL, 3);
+
+INSERT INTO employee VALUES
+('AH421909', 'Alton', 'Peters', 124952125, 'A PATRON', 1800, 'CV 1'),
+('AB241209', 'Wade', 'James', 492103210, 'B PATRON', 1200, 'CV 2'),
+('AD441290', 'Robert', 'Gill', 512412041, 'C PATRON', 900, 'CV 3'),
+('AC421412', 'Scott', 'Mullins', 985701275, 'A PATRON', 1000, 'CV 4'),
+('Ac412095', 'Nancy', 'Reid', 851258221, 'B PATRON', 1100, 'CV 5'),
+('AG510295', 'Patti', 'Ward', 429048121, 'C PATRON', 900, 'CV 6'),
+('AH195412', 'David', 'Barnes', 499248120, 'A PATRON', 700, 'CV 7'),
+('AI451259', 'Martin', 'Mendez', 591205892, 'B PATRON', 800, 'CV 8'),
+('AE412544', 'Jerry', 'Warren', 380293213, 'C PATRON', 900, 'CV 9'),
+('AZ420194', 'Johnny', 'Jensen', 501290521, 'A PATRON', 1300, 'CV 10');
+
+INSERT INTO kindergarten_teacher VALUES
+('AB241209', 08.00, 'Department 1', 'AH421909', 1),
+('AD441290', 07.50, 'Department 2', 'AH421909', 2),
+('AC421412', 09.00, 'Department 3', 'AH421909', 3);
+
+INSERT INTO driver VALUES
+('Ac412095', 5281905812),
+('AG510295', 4921481024),
+('AH195412', 3321093825);
+
+INSERT INTO cook VALUES
+('AI451259', 5),
+('AE412544', 7),
+('AZ420194', 2);
+
+INSERT INTO bus VALUES
+(1295702154, '2015-04-23', 83124, 'Model 1'),
+(2948120949, '2015-02-17', 147012, 'Model 2'),
+(5952152153, '2015-07-09', 119312, 'Model 3');
+
+
+INSERT INTO driving VALUES
+(1295702154, 'Ac412095', '2014-11-12'),
+(2948120949, 'AG510295', '2014-11-12'),
+(5952152153, 'AH195412', '2014-11-12');
