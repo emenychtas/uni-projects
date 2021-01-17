@@ -1,0 +1,208 @@
+DELIMITER $
+
+DROP PROCEDURE IF EXISTS repairCost$
+CREATE PROCEDURE repairCost(IN repair_id INT(11))
+BEGIN
+	DECLARE costSUM FLOAT(10,2);
+	DECLARE knownCost FLOAT(10,2);
+	DECLARE w_hours INT(11);
+	DECLARE w_salary FLOAT(10,2);
+	
+	DECLARE finishedFlag INT;
+	DECLARE workersCursor CURSOR FOR
+	SELECT hours, salary FROM works INNER JOIN employee ON works.afm = employee.afm WHERE id = repair_id;
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedFlag = 1;
+	
+	SET costSUM = 0;
+	SET finishedFlag = 0;
+	OPEN workersCursor;
+	
+	REPEAT
+		FETCH workersCursor INTO w_hours, w_salary;
+		IF (finishedFlag = 0) THEN
+			SET costSUM = costSUM + w_hours * (w_salary / 140);
+		END IF;
+	UNTIL (finishedFlag = 1) END REPEAT;
+	
+	CLOSE workersCursor;
+	SELECT costSUM AS 'Computed Cost';
+	
+	SELECT cost INTO knownCost FROM repair WHERE id = repair_id;
+	
+	IF (knownCost < costSUM) THEN
+		UPDATE repair SET cost = costSUM WHERE id = repair_id;
+		SELECT 'Computed cost higher than previously known. Cost updated.';
+	ELSE
+		SELECT 'Repair cost not updated.';
+	END IF;
+END$
+
+DROP PROCEDURE IF EXISTS employeeSupervisor$
+CREATE PROCEDURE employeeSupervisor(IN employee_afm CHAR(11))
+BEGIN
+	DECLARE e_name VARCHAR(50);
+	DECLARE e_next CHAR(11);
+	DECLARE e_supervises INT;
+	
+	SET e_next = employee_afm;
+	
+	REPEAT
+		SELECT emp1.name, emp1.sup_afm, count(emp2.afm)
+		INTO e_name, e_next, e_supervises
+		FROM employee AS emp1 LEFT JOIN employee AS emp2 ON emp1.afm = emp2.sup_afm
+		GROUP BY emp1.afm
+		HAVING emp1.afm = e_next;
+		
+		SELECT e_name AS 'Name', e_supervises AS 'Supervises';
+		
+		IF (e_next IS NOT NULL) THEN
+			SELECT 'This employee is supervised by the following one:';
+		ELSE
+			SELECT 'This employee has no supervisor.';
+		END IF;
+	UNTIL (e_next IS NULL) END REPEAT;
+END$
+
+DROP PROCEDURE IF EXISTS carOwners$
+CREATE PROCEDURE carOwners()
+BEGIN
+	DECLARE o_afm CHAR(11);
+	DECLARE o_fullname VARCHAR(250);
+	DECLARE o_epaggelma ENUM('dhmosios','eleu8eros','allo');
+	DECLARE o_gemiNum VARCHAR(12);
+	DECLARE o_carCount INT;
+	DECLARE o_repairCosts FLOAT(10,2);
+	DECLARE o_nature ENUM('Person','Company');
+	
+	DECLARE finishedFlag INT;
+	
+	DECLARE ownerCursor CURSOR FOR
+	SELECT owner.afm, fullname, epaggelma, gemiNum, count(DISTINCT car.car_num), SUM(repair.cost)
+	FROM owner LEFT JOIN person ON owner.afm = person.afm LEFT JOIN company ON owner.afm = company.afm
+	LEFT JOIN car ON owner.afm = car.afm LEFT JOIN repair ON car.car_num = repair.car_num GROUP BY owner.afm;
+	
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedFlag = 1;
+	
+	SET finishedFlag = 0;
+	OPEN ownerCursor;
+	
+	REPEAT
+		FETCH ownerCursor INTO o_afm, o_fullname, o_epaggelma, o_gemiNum, o_carCount, o_repairCosts;
+		IF (finishedFlag = 0) THEN
+			IF (o_epaggelma IS NOT NULL) THEN
+				SET o_nature = 1;
+			ELSEIF (o_gemiNum IS NOT NULL) THEN
+				SET o_nature = 2;
+			END IF;
+			
+			IF (o_repairCosts IS NULL) THEN
+				SET o_repairCosts = 0;
+			END IF;
+			
+			SELECT o_afm AS 'AFM', o_fullname AS 'Full Name', o_nature AS 'Nature', o_carCount AS 'Cars Owned', o_repairCosts AS 'Repair Costs';
+		END IF;
+	UNTIL (finishedFlag = 1) END REPEAT;
+	
+	CLOSE ownerCursor;
+END$
+
+DROP PROCEDURE IF EXISTS garages$
+CREATE PROCEDURE garages()
+BEGIN
+	DECLARE g_code INT(11);
+	DECLARE g_address VARCHAR(200);
+	DECLARE g_income FLOAT(10,2);
+	
+	DECLARE finishedFlag INT;
+	
+	DECLARE garageCursor CURSOR FOR
+	SELECT kwdikos, address FROM garage;
+	
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedFlag = 1;
+	
+	SET finishedFlag = 0;
+	OPEN garageCursor;
+	
+	REPEAT
+		FETCH garageCursor INTO g_code, g_address;
+		IF (finishedFlag = 0) THEN
+			SELECT SUM(cost) INTO g_income FROM repair WHERE kwdikos = g_code GROUP BY kwdikos;
+
+			SELECT g_code AS 'Garage Code', g_address AS 'Garage Address', g_income AS 'Garage Income';
+			
+			SELECT phone AS 'Telephones' FROM telephones WHERE kwdikos = g_code;
+			
+			SELECT DISTINCT eidikothta AS 'Specialties' FROM employee WHERE gar_kwd = g_code;
+		END IF;
+	UNTIL (finishedFlag = 1) END REPEAT;
+	
+	CLOSE garageCursor;
+END$
+
+DROP TRIGGER IF EXISTS checkSalary$
+CREATE TRIGGER checkSalary
+BEFORE INSERT ON employee
+FOR EACH ROW
+BEGIN
+	DECLARE minSal FLOAT(10,2);
+	DECLARE maxSal FLOAT(10,2);
+	
+	SET minSal = 426.95;
+	SET maxSal = 60000;
+	
+	IF (NEW.salary < minSal) THEN
+		SET NEW.salary = minSal;
+	ELSEIF (NEW.salary > maxSal) THEN
+		SET NEW.salary = maxSal;
+	END IF;
+END$
+
+DROP TRIGGER IF EXISTS checkDamDate$
+CREATE TRIGGER checkDamDate
+BEFORE INSERT ON damages
+FOR EACH ROW
+BEGIN
+	DECLARE currentDate DATE;
+	
+	SET currentDate = CURDATE();
+	
+	IF (NEW.dam_date > currentDate) THEN
+		SET NEW.dam_date = NULL;
+	END IF;
+END$
+
+DROP TRIGGER IF EXISTS checkHours$
+CREATE TRIGGER checkHours
+BEFORE INSERT ON works
+FOR EACH ROW
+BEGIN
+	DECLARE minHours INT(11);
+	DECLARE maxHours INT(11);
+	
+	SET minHours = 1;
+	SET maxHours = 800;
+	
+	IF (NEW.hours < minHours) THEN
+		SET NEW.hours = minHours;
+	ELSEIF (NEW.hours > maxHours) THEN
+		SET NEW.hours = maxHours;
+	END IF;
+END$
+
+DROP TRIGGER IF EXISTS checkKM$
+CREATE TRIGGER checkKM
+BEFORE INSERT ON car
+FOR EACH ROW
+BEGIN
+	DECLARE minKM INT(11);
+	DECLARE maxKM INT(11);
+	
+	SET minKM = 10;
+	SET maxKM = 9999999;
+	
+	IF (NEW.km < minKM OR NEW.km > maxKM) THEN
+		SET NEW.car_num = NULL;
+	END IF;
+END$
+
+DELIMITER ;
