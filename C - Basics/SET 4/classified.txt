@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <string.h>
+
+int main()
+{
+	int i,Option,PassLen,Key=0;
+	char Filename[256],Password[256];
+
+	printf("Program functions:\n");
+	printf("1 - Encrypt File\n");
+	printf("2 - Decrypt File\n");
+	printf("0 - Exit\n");
+	printf("Choose: ");
+	scanf("%d", &Option);
+
+	if(Option==1 || Option==2)
+	{
+		printf("Filename: ");
+		scanf("%s", Filename);
+		printf("Password: ");
+		scanf("%s", Password);
+
+		PassLen = strlen(Password);
+		for(i=0; i<PassLen; i++) Key += Password[i];
+
+		FILE *fp = fopen(Filename, "r+");
+		int Ch = getc(fp);
+
+		while(Ch!=EOF)
+		{
+			if(Option==1)
+			{
+				Ch += Key;
+				while(Ch>127) Ch -= 127;
+			}
+			else
+			{
+				Ch -= Key;
+				while(Ch<1) Ch += 127;
+			}
+
+			fseek(fp, -1, SEEK_CUR);
+			putc(Ch, fp);
+
+			Ch = getc(fp);
+		}
+
+		fclose(fp);
+
+		printf("File operation complete.\n");
+	}
+
+	return 0;
+}

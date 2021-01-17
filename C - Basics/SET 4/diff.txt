@@ -1,0 +1,10 @@
+---Line 2
+file_old.txt
+How are you?
+file_new.txt
+How do you do?
+---Line 4
+file_old.txt
+br,
+file_new.txt
+Best regards,
