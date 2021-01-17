@@ -1,0 +1,54 @@
+html, body
+{
+    height:100%;
+    width:100%;
+    margin:0;
+    padding:0;
+    background-image:url("1.jpg");
+}
+header
+{
+    background-color:rgba(0,0,0,0.7);
+    color:white;
+    text-align:center;
+    position:fixed;
+    top:0;
+    bottom:90%;
+    left:0;
+    right:0;
+}
+section
+{
+    position:fixed;
+    top:10%;
+    bottom:5%;
+    left:0;
+    right:0;
+    padding:20px;
+    background-color:rgba(153,153,153,0.6);
+}
+footer
+{
+    background-color:rgba(0,0,0,0.7);
+    color:white;
+    clear:both;
+    text-align:center;
+    line-height:30px;
+    width:100%;
+    position:fixed;
+    bottom:0;
+    top:95%;
+}
+#map
+{
+    display:inline-block;
+    float:left;
+    height: 100%;
+    width: 70%;
+    border:3px solid black;
+}
+.controls
+{
+    display:inline-block;
+    margin-left:16px;
+}
