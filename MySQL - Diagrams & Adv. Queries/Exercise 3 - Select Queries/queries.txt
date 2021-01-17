@@ -1,0 +1,124 @@
+#1:
+
+SELECT *
+FROM employee
+WHERE salary >= 1500;
+
+#2:
+
+SELECT *
+FROM car
+WHERE colour LIKE '%red%';
+
+#3:
+
+SELECT *
+FROM repair
+WHERE cost BETWEEN 50 AND 100;
+
+#4:
+
+SELECT gemiNum
+FROM company
+WHERE afm LIKE '123%';
+
+#5:
+
+SELECT afm, hours, id
+FROM works
+ORDER BY hours DESC
+LIMIT 3;
+
+#6:
+
+SELECT afm, count(*) AS repairs
+FROM works
+GROUP BY afm
+HAVING repairs > 1;
+
+#7:
+
+SELECT *
+FROM repair
+WHERE description IS NOT NULL AND cost > 1000
+ORDER BY id, cost DESC;
+
+#8:
+
+SELECT car_num, model
+FROM car
+WHERE km > 30000 AND colour LIKE 'black'
+ORDER BY car_num;
+
+#9:
+
+SELECT salary
+FROM employee INNER JOIN garage ON employee.gar_kwd = garage.kwdikos
+WHERE kwdikos = 100 AND address LIKE 'panepisthmiou';
+
+#10:
+
+SELECT fullname
+FROM owner INNER JOIN person ON owner.afm = person.afm
+WHERE epaggelma LIKE 'dhmosios';
+
+#11:
+
+SELECT SUM(hours)
+FROM repair INNER JOIN works ON repair.id = works.id
+WHERE cost > 1000 AND description LIKE '%engine%'
+GROUP BY repair.id
+ORDER BY SUM(hours) ASC;
+
+#12:
+
+SELECT *
+FROM damtype
+WHERE dam_type LIKE 'lastixo' AND dam_date BETWEEN '2012-12-01' AND '2012-12-31';
+
+#13:
+
+SELECT model, count(damages.car_num) AS vlaves
+FROM car LEFT JOIN damages ON car.car_num = damages.car_num
+GROUP BY car.model;
+
+#14:
+
+SELECT emp1.afm, emp1.name, count(emp2.afm) AS supervises
+FROM employee AS emp1 LEFT JOIN employee AS emp2 ON emp1.afm = emp2.sup_afm
+GROUP BY emp1.afm;
+
+#15:
+
+SELECT employee.afm, name, SUM(hours)
+FROM employee LEFT JOIN works ON employee.afm = works.afm
+GROUP BY employee.afm;
+
+#16:
+
+SELECT emp1.name, address, emp2.name AS supervisor
+FROM employee AS emp1 LEFT JOIN employee AS emp2 ON emp1.sup_afm = emp2.afm LEFT JOIN garage ON emp1.gar_kwd = garage.kwdikos;
+
+#17:
+
+SELECT garage.kwdikos, address
+FROM repair INNER JOIN garage ON repair.kwdikos = garage.kwdikos INNER JOIN car ON repair.car_num = car.car_num INNER JOIN company ON car.afm = company.afm
+WHERE gemiNum LIKE '123456789012';
+
+#18:
+
+SELECT company.afm, gemiNum, count(car_num) AS cars
+FROM company LEFT JOIN car ON company.afm = car.afm
+GROUP BY company.afm;
+
+#19:
+
+SELECT car.car_num, model, SUM(cost), fullname
+FROM car LEFT JOIN repair ON car.car_num = repair.car_num LEFT JOIN owner ON car.afm = owner.afm
+GROUP BY car.car_num;
+
+#20:
+
+SELECT employee.afm, name
+FROM employee INNER JOIN works ON employee.afm = works.afm INNER JOIN repair ON works.id = repair.id INNER JOIN car ON repair.car_num = car.car_num INNER JOIN owner ON car.afm = owner.afm
+WHERE fullname LIKE 'andreas polyxroniou';
