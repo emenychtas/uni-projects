@@ -1,0 +1,62 @@
+﻿<Request> ::= <Request-Line> <Headers> <EOL> <Message-Body>
+
+
+
+
+<Request-Line> ::= <Method> " " <Request-URI> " " <HTTP-Version> <EOL>
+
+<Method> ::= "GET" | "HEAD" | "POST"
+
+<Request-URI> ::= <String>
+
+<HTTP-Version> ::= "HTTP/1.1" | "HTTP/1.0"
+
+
+
+
+<Headers> ::= <Headers> <Header> | <Header>
+
+<Header> ::= (<General-Header> | <Request-Header> | <Entity-Header>) <EOL>
+
+
+<General-Header> ::= <Connection> | <Date> | <Transfer-Encoding>
+
+<Connection> ::= "Connection: " <String>
+
+<Date> ::= "Date: " <Date-Format>
+
+<Transfer-Encoding> ::= "Transfer-Encoding: " ("chunked" | "gzip" | "deflate")
+
+
+<Request-Header> ::= <Accept-Charset> | <Referer> | <User-Agent>
+
+<Accept-Charset> ::= "Accept-Charset: " <String>
+
+<Referer> ::= "Referer: " <String>
+
+<User-Agent> ::= "User-Agent: " <String>
+
+
+<Entity-Header> ::= <Content-Length> | <Expires>
+
+<Content-Length> ::= "Content-Length: " <Unsigned-Integer>
+
+<Expires> ::= "Expires: " <Date-Format>
+
+
+
+
+<Message-Body> ::= <String>
+
+
+
+
+<Date-Format> ::= <Digit><Digit> "/" <Digit><Digit> "/" <Digit><Digit><Digit><Digit> " " <Digit><Digit> ":" <Digit><Digit>
+
+<Unsigned-Integer> ::= <Unsigned-Integer> <Digit> | <Digit>
+
+<Digit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+<String> ::= <String> <Character> | <Character>
+
+<Character> ::= (0 - 9) | (a - z) | (A - Z) | " " | "_" | "-" | "?" | "!" | "#" | "(" | ")" | "<" | ">" | "^" | "." | "," | ";" | ":" | "~" | "|" | "[" | "]" | "{" | "}" | "+" | "=" | "&" | "^" | "*" | "@" | "$" | "%" | "/" | "\" | "`" | "'" | """
